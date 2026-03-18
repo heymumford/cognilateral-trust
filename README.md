@@ -24,6 +24,12 @@ $ trust-check 0.3 --json
 {"confidence": 0.3, "tier": "C3", "route": "basic", "should_proceed": true, "verdict": "ACT", ...}
 ```
 
+REST API (no install needed):
+```bash
+$ curl -s https://cognilateral.fly.dev/api/trust/summary | jq .calibration.accuracy
+0.0
+```
+
 ## Install
 
 ```bash
