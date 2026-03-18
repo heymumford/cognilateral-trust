@@ -12,7 +12,6 @@ from cognilateral_trust import (
     ROUTE_SOVEREIGNTY_GATE,
     ROUTE_WARRANT_CHECK,
     ConfidenceTier,
-    TrustEvaluation,
     evaluate_tier_routing,
     evaluate_trust,
     route_by_tier,

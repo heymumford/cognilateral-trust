@@ -8,7 +8,7 @@ from cognilateral_trust.calibrated import CalibratedTrustEngine
 class TestCalibratedTrustEngine:
     def test_evaluate_tracks_prediction(self) -> None:
         engine = CalibratedTrustEngine()
-        result = engine.evaluate(0.8)
+        engine.evaluate(0.8)
         assert engine.stats["total"] == 1
         assert engine.stats["pending"] == 1
 
