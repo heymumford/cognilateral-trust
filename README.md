@@ -8,6 +8,22 @@ An epistemic trust layer for AI agents. Maps confidence to action — so autonom
 [![Python](https://img.shields.io/pypi/pyversions/cognilateral-trust)](https://pypi.org/project/cognilateral-trust/)
 [![License](https://img.shields.io/github/license/heymumford/cognilateral-trust)](LICENSE)
 
+## Live Demo
+
+Dashboard: [cognilateral.fly.dev/trust](https://cognilateral.fly.dev/trust)
+
+CLI:
+```bash
+$ trust-check 0.7
+ACT — C7 (sovereignty_gate)
+
+$ trust-check 0.92 --irreversible
+ESCALATE — C9 (sovereignty_gate): irreversible action at sovereignty-grade tier
+
+$ trust-check 0.3 --json
+{"confidence": 0.3, "tier": "C3", "route": "basic", "should_proceed": true, "verdict": "ACT", ...}
+```
+
 ## Install
 
 ```bash
@@ -98,6 +114,16 @@ Lower-level routing if you need direct tier control.
 ### `AccountabilityStore`
 
 Thread-safe in-memory store for accountability records. Every decision gets logged.
+
+## Examples
+
+| Example | Description |
+|---------|-------------|
+| [`langgraph_trust_node.py`](examples/langgraph_trust_node.py) | Trust gate node for LangGraph pipelines |
+| [`crewai_trust_tool.py`](examples/crewai_trust_tool.py) | CrewAI tool wrapping trust evaluation |
+| [`openai_trust_wrapper.py`](examples/openai_trust_wrapper.py) | Confidence scoring wrapper for OpenAI/Anthropic LLM calls |
+| [`mem0_trust_provider.py`](examples/mem0_trust_provider.py) | Memory confidence scoring for Mem0 agent memories |
+| [`github_actions_trust_gate.yml`](examples/github_actions_trust_gate.yml) | CI trust gate for auto-merge decisions in GitHub Actions |
 
 ## Why This Exists
 
