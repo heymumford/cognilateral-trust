@@ -30,6 +30,7 @@ __all__ = [
     "PredictionStore",
     "TrustEvaluation",
     "evaluate_tier_routing",
+    "CalibratedTrustEngine",
     "evaluate_trust",
     "route_by_tier",
 ]
@@ -45,3 +46,4 @@ from cognilateral_trust.core import (
 )
 from cognilateral_trust.evaluate import TrustEvaluation, evaluate_trust
 from cognilateral_trust.prediction_store import PredictionStore
+from cognilateral_trust.calibrated import CalibratedTrustEngine
