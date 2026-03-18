@@ -129,6 +129,7 @@ Thread-safe in-memory store for accountability records. Every decision gets logg
 | [`crewai_trust_tool.py`](examples/crewai_trust_tool.py) | CrewAI tool wrapping trust evaluation |
 | [`openai_trust_wrapper.py`](examples/openai_trust_wrapper.py) | Confidence scoring wrapper for OpenAI/Anthropic LLM calls |
 | [`mem0_trust_provider.py`](examples/mem0_trust_provider.py) | Memory confidence scoring for Mem0 agent memories |
+| [`cognee_trust_layer.py`](examples/cognee_trust_layer.py) | Knowledge graph trust gates — confidence floors for Cognee ingest and retrieval |
 | [`github_actions_trust_gate.yml`](examples/github_actions_trust_gate.yml) | CI trust gate for auto-merge decisions in GitHub Actions |
 
 ## Why This Exists
