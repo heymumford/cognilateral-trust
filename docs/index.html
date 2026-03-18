@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cognilateral — AI that tells you when it's guessing</title>
+<meta name="description" content="Epistemic trust layer for AI agents. Confidence tiers, sovereignty gates, and accountability records. pip install cognilateral-trust">
+<style>
+  :root { --bg: #0a0a0a; --fg: #e8e8e8; --accent: #4fc3f7; --muted: #888; --code-bg: #1a1a1a; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+  .container { max-width: 720px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Hero */
+  .hero { padding: 6rem 0 4rem; text-align: center; }
+  .hero h1 { font-size: 2.4rem; font-weight: 700; line-height: 1.2; margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { font-size: 1.15rem; color: var(--muted); max-width: 540px; margin: 0 auto 2rem; }
+  .cta { display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .cta a { padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+  .cta-primary { background: var(--accent); color: #000; }
+  .cta-secondary { border: 1px solid #444; color: var(--fg); }
+
+  /* Code */
+  pre { background: var(--code-bg); border: 1px solid #333; border-radius: 8px; padding: 1.2rem; overflow-x: auto; font-size: 0.9rem; margin: 1.5rem 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; }
+
+  /* Sections */
+  section { padding: 3rem 0; }
+  h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+  h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--accent); }
+
+  /* Pillars */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin: 1.5rem 0; }
+  .pillar { background: var(--code-bg); border: 1px solid #333; border-radius: 8px; padding: 1.2rem; }
+  .pillar p { color: var(--muted); font-size: 0.9rem; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #222; }
+  th { color: var(--muted); font-weight: 500; }
+
+  /* Footer */
+  footer { padding: 3rem 0; text-align: center; color: var(--muted); font-size: 0.85rem; border-top: 1px solid #222; margin-top: 2rem; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  .live-badge { display: inline-block; background: #1b5e20; color: #66bb6a; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <section class="hero">
+    <h1>Your AI is confident about everything.<br><em>That's the problem.</em></h1>
+    <p>Cognilateral is the trust layer for AI agents. It tells you when your AI is sure — and when it's guessing. Because the most dangerous AI isn't the one that can't answer. It's the one that answers confidently when it shouldn't.</p>
+    <div class="cta">
+      <a href="https://github.com/heymumford/cognilateral-trust" class="cta-primary">View on GitHub</a>
+      <a href="https://cognilateral.fly.dev/trust" class="cta-secondary">Live Dashboard <span class="live-badge">LIVE</span></a>
+    </div>
+  </section>
+
+  <pre><code>pip install cognilateral-trust
+
+$ trust-check 0.92 --irreversible
+ESCALATE — C9 (sovereignty_gate): irreversible action at sovereignty-grade tier</code></pre>
+
+  <section>
+    <h2>Three things AI agents need</h2>
+    <div class="pillars">
+      <div class="pillar">
+        <h3>Know what's real</h3>
+        <p>Every response gets a calibrated confidence score. When it says 90%, it means 90%. No more guessing whether the AI is guessing.</p>
+      </div>
+      <div class="pillar">
+        <h3>Knowledge that expires</h3>
+        <p>Information ages. What the AI knew last month might not be true today. Warrants track when knowledge goes stale — before you act on it.</p>
+      </div>
+      <div class="pillar">
+        <h3>Acts when sure, asks when not</h3>
+        <p>A sovereignty gate: act autonomously when confidence is high, escalate to a human when it's not. Every decision logged.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Before and after</h2>
+    <table>
+      <tr><th>Without</th><th>With Cognilateral</th></tr>
+      <tr><td>AI sounds certain about everything</td><td>You know exactly how certain it is</td></tr>
+      <tr><td>Stale information treated as current</td><td>Knowledge flagged when it expires</td></tr>
+      <tr><td>AI acts without asking</td><td>AI asks when it isn't sure enough</td></tr>
+      <tr><td>"Who was responsible?" has no answer</td><td>Every action has an accountability trace</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Works with everything</h2>
+    <p>LangGraph, CrewAI, OpenAI, Anthropic, DSPy, Mem0, GitHub Actions, or plain Python. Zero dependencies. No API keys. No cloud.</p>
+    <pre><code>from cognilateral_trust import evaluate_trust
+
+result = evaluate_trust(0.7, is_reversible=False)
+if result.should_proceed:
+    deploy()
+else:
+    print(result.accountability_record.reasons)
+    # ("irreversible action at sovereignty-grade tier",)</code></pre>
+  </section>
+
+  <footer>
+    <p>Built by <a href="https://github.com/heymumford">Eric Mumford</a>.</p>
+    <p>Not because AI needs guardrails. Because people deserve to know when AI is guessing.</p>
+    <p style="margin-top: 1rem;">
+      <a href="https://pypi.org/project/cognilateral-trust/">PyPI</a> ·
+      <a href="https://github.com/heymumford/cognilateral-trust">GitHub</a> ·
+      <a href="https://cognilateral.fly.dev/trust">Dashboard</a>
+    </p>
+  </footer>
+</div>
+
+</body>
+</html>
