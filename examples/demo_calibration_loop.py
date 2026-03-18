@@ -11,7 +11,6 @@ and watches calibration accuracy converge.
 from __future__ import annotations
 
 import random
-import time
 
 from cognilateral_trust import CalibratedTrustEngine
 
@@ -33,7 +32,7 @@ def main() -> None:
         result = engine.evaluate(
             confidence,
             is_reversible=is_reversible,
-            context=f"{action} (round {i+1})",
+            context=f"{action} (round {i + 1})",
         )
 
         # Simulate outcome: higher confidence = higher chance of being correct
@@ -51,7 +50,7 @@ def main() -> None:
         if (i + 1) % 5 == 0 or i == 0:
             stats = engine.stats
             print(
-                f"[{i+1:2d}] conf={confidence:.2f} {bar:<20s} "
+                f"[{i + 1:2d}] conf={confidence:.2f} {bar:<20s} "
                 f"{verdict:>3s} {outcome:>4s} | "
                 f"accuracy={stats['accuracy']:.3f} "
                 f"({stats['resolved']}/{stats['total']} resolved)"

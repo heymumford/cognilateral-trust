@@ -33,6 +33,44 @@ __all__ = [
     "CalibratedTrustEngine",
     "evaluate_trust",
     "route_by_tier",
+    # S1: confidence extraction
+    "extract_confidence",
+    "extract_confidence_from_anthropic_response",
+    "extract_confidence_from_openai_response",
+    "extract_confidence_from_text",
+    # S2: warrants
+    "Warrant",
+    "WarrantStore",
+    "evaluate_trust_with_warrant",
+    "evaluate_warrant",
+    # S3: middleware
+    "TrustEscalation",
+    "TrustMiddleware",
+    "async_evaluate_trust",
+    "trust_gate",
+    # S4: JSONL persistence
+    "JSONLAccountabilityStore",
+    "JSONLPredictionStore",
+    # S6: claim extraction
+    "Claim",
+    "ClaimSet",
+    "extract_claims",
+    # S7: fidelity verification
+    "FidelityResult",
+    "verify_fidelity",
+    "verify_fidelity_batch",
+    # S8: epistemic firewall
+    "EpistemicFirewall",
+    "EpistemicLevel",
+    "MismatchResult",
+    "check_epistemic_mismatch",
+    # S9: sovereignty gate
+    "DEFAULT_POLICY",
+    "SovereigntyDecision",
+    "SovereigntyError",
+    "SovereigntyPolicy",
+    "evaluate_sovereignty",
+    "sovereignty_gate",
 ]
 
 from cognilateral_trust.core import (
@@ -47,3 +85,49 @@ from cognilateral_trust.core import (
 from cognilateral_trust.evaluate import TrustEvaluation, evaluate_trust
 from cognilateral_trust.prediction_store import PredictionStore
 from cognilateral_trust.calibrated import CalibratedTrustEngine
+from cognilateral_trust.extractors import (
+    extract_confidence,
+    extract_confidence_from_anthropic_response,
+    extract_confidence_from_openai_response,
+    extract_confidence_from_text,
+)
+from cognilateral_trust.warrants import (
+    Warrant,
+    WarrantStore,
+    evaluate_trust_with_warrant,
+    evaluate_warrant,
+)
+from cognilateral_trust.middleware import (
+    TrustEscalation,
+    TrustMiddleware,
+    async_evaluate_trust,
+    trust_gate,
+)
+from cognilateral_trust.persistence import (
+    JSONLAccountabilityStore,
+    JSONLPredictionStore,
+)
+from cognilateral_trust.claims import (
+    Claim,
+    ClaimSet,
+    extract_claims,
+)
+from cognilateral_trust.fidelity import (
+    FidelityResult,
+    verify_fidelity,
+    verify_fidelity_batch,
+)
+from cognilateral_trust.firewall import (
+    EpistemicFirewall,
+    EpistemicLevel,
+    MismatchResult,
+    check_epistemic_mismatch,
+)
+from cognilateral_trust.sovereignty import (
+    DEFAULT_POLICY,
+    SovereigntyDecision,
+    SovereigntyError,
+    SovereigntyPolicy,
+    evaluate_sovereignty,
+    sovereignty_gate,
+)

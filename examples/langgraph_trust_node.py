@@ -22,6 +22,7 @@ from cognilateral_trust import evaluate_trust
 # LangGraph is optional — this example shows the integration pattern
 try:
     from langgraph.graph import StateGraph, END
+
     HAS_LANGGRAPH = True
 except ImportError:
     HAS_LANGGRAPH = False
@@ -88,10 +89,14 @@ def build_trust_graph() -> Any:
     builder.add_node("escalate", escalate_action)
 
     builder.set_entry_point("trust_gate")
-    builder.add_conditional_edges("trust_gate", should_proceed, {
-        "execute": "execute",
-        "escalate": "escalate",
-    })
+    builder.add_conditional_edges(
+        "trust_gate",
+        should_proceed,
+        {
+            "execute": "execute",
+            "escalate": "escalate",
+        },
+    )
     builder.add_edge("execute", END)
     builder.add_edge("escalate", END)
 
