@@ -39,5 +39,11 @@ line-length = 120
 [tool.ruff.lint]
 select = ["E", "F", "W"]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.9",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
