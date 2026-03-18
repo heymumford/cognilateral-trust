@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import random
-import time
 
 from cognilateral_trust import CalibratedTrustEngine
 
@@ -51,7 +50,7 @@ def simulate(count: int = 100, seed: int = 42) -> None:
         result = engine.evaluate(
             confidence,
             is_reversible=is_reversible,
-            context=f"{agent['name']} decision #{i+1}",
+            context=f"{agent['name']} decision #{i + 1}",
         )
 
         # Simulate outcome based on agent accuracy profile
@@ -68,7 +67,7 @@ def simulate(count: int = 100, seed: int = 42) -> None:
         if (i + 1) % max(1, count // 10) == 0:
             stats = engine.stats
             print(
-                f"  [{i+1:4d}/{count}] "
+                f"  [{i + 1:4d}/{count}] "
                 f"agent={agent['name']:<18s} "
                 f"conf={confidence:.2f} "
                 f"{'ACT' if result.should_proceed else 'ESC':>3s} "
@@ -79,8 +78,8 @@ def simulate(count: int = 100, seed: int = 42) -> None:
     print("=" * 65)
     stats = engine.stats
     print(f"Final calibration accuracy: {stats['accuracy']:.4f}")
-    print(f"ACT: {act_count} | ESCALATE: {escalate_count} | ACT rate: {act_count/count:.1%}")
-    print(f"Correct: {correct_count}/{count} ({correct_count/count:.1%})")
+    print(f"ACT: {act_count} | ESCALATE: {escalate_count} | ACT rate: {act_count / count:.1%}")
+    print(f"Correct: {correct_count}/{count} ({correct_count / count:.1%})")
 
 
 if __name__ == "__main__":

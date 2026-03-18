@@ -24,7 +24,6 @@ from __future__ import annotations
 from typing import Any
 
 from cognilateral_trust import evaluate_trust
-from cognilateral_trust.core import ConfidenceTier
 
 
 def _age_decay(confidence: float, age_hours: float, half_life_hours: float = 168.0) -> float:
