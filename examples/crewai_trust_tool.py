@@ -24,7 +24,6 @@ from cognilateral_trust import evaluate_trust
 # CrewAI is optional
 try:
     from crewai.tools import BaseTool
-
     HAS_CREWAI = True
 except ImportError:
     HAS_CREWAI = False
@@ -55,7 +54,6 @@ def trust_check(
 
 
 if HAS_CREWAI:
-
     class TrustTool(BaseTool):
         """CrewAI tool that evaluates epistemic trust before agent actions."""
 
