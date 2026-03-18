@@ -19,26 +19,18 @@ class TestCalibrationProperties:
     def test_higher_confidence_proceeds_more_often(self) -> None:
         """Over 1000 random samples, high confidence proceeds more than low."""
         random.seed(42)
-        low_proceed = sum(
-            1 for _ in range(1000) if evaluate_trust(random.uniform(0.0, 0.3)).should_proceed
-        )
-        high_proceed = sum(
-            1 for _ in range(1000) if evaluate_trust(random.uniform(0.7, 1.0)).should_proceed
-        )
+        low_proceed = sum(1 for _ in range(1000) if evaluate_trust(random.uniform(0.0, 0.3)).should_proceed)
+        high_proceed = sum(1 for _ in range(1000) if evaluate_trust(random.uniform(0.7, 1.0)).should_proceed)
         assert high_proceed >= low_proceed, f"High ({high_proceed}) should >= Low ({low_proceed})"
 
     def test_irreversible_escalates_more_at_high_tiers(self) -> None:
         """Irreversible actions at high tiers escalate more than at low tiers."""
         random.seed(42)
         low_escalate = sum(
-            1
-            for _ in range(1000)
-            if not evaluate_trust(random.uniform(0.0, 0.3), is_reversible=False).should_proceed
+            1 for _ in range(1000) if not evaluate_trust(random.uniform(0.0, 0.3), is_reversible=False).should_proceed
         )
         high_escalate = sum(
-            1
-            for _ in range(1000)
-            if not evaluate_trust(random.uniform(0.7, 1.0), is_reversible=False).should_proceed
+            1 for _ in range(1000) if not evaluate_trust(random.uniform(0.7, 1.0), is_reversible=False).should_proceed
         )
         # High-tier irreversible actions should escalate more (sovereignty gate kicks in)
         assert high_escalate > low_escalate, f"High ({high_escalate}) should > Low ({low_escalate})"

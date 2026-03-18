@@ -19,6 +19,7 @@ class TestCLI:
     def test_json_output(self, capsys) -> None:
         main(["0.7", "--json"])
         import json
+
         data = json.loads(capsys.readouterr().out)
         assert "tier" in data
         assert "verdict" in data
