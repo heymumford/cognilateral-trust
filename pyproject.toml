@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cognilateral-trust"
-version = "0.1.0"
+version = "0.2.0"
 description = "Epistemic trust layer for AI agents — confidence tiers, routing, and accountability"
 readme = "README.md"
 license = "Apache-2.0"
@@ -21,6 +21,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+
+[project.scripts]
+trust-check = "cognilateral_trust.cli:main"
 
 [project.urls]
 Homepage = "https://cognilateral.com"
