@@ -1,44 +1,23 @@
-"""CrewAI TrustTool — trust evaluation as a CrewAI tool.
-
-Usage:
-    from cognilateral_trust.integrations.crewai import TrustEvaluationTool
-
-    trust_tool = TrustEvaluationTool()
-
-    agent = Agent(
-        role="Decision Maker",
-        tools=[trust_tool],
-        ...
-    )
-
-The tool accepts a confidence level and returns an ACT/ESCALATE verdict
-with accountability record. Agents can call it before taking any action
-to verify whether they should proceed.
-
-Zero dependencies beyond cognilateral-trust itself. CrewAI is only
-needed at runtime when this module is imported.
-"""
+"""CrewAI TrustTool with TrustPassport support."""
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
 
 from cognilateral_trust import evaluate_trust
+from cognilateral_trust.core import PassportStamp, TrustPassport
 
 
 class TrustEvaluationTool:
-    """CrewAI-compatible tool for trust evaluation.
-
-    Implements the CrewAI Tool protocol (name, description, _run).
-    Can be used directly or subclassed for framework-specific base classes.
-    """
+    """CrewAI-compatible tool for trust evaluation with optional TrustPassport support."""
 
     name: str = "trust_evaluation"
     description: str = (
         "Evaluate whether an AI agent should proceed with an action based on "
         "confidence level. Input: confidence (0.0-1.0), is_reversible (bool), "
-        "touches_external (bool). Returns ACT or ESCALATE verdict with "
-        "accountability record."
+        "touches_external (bool), passport (optional TrustPassport). "
+        "Returns ACT or ESCALATE verdict with accountability record."
     )
 
     def _run(
@@ -46,6 +25,7 @@ class TrustEvaluationTool:
         confidence: float = 0.5,
         is_reversible: bool = True,
         touches_external: bool = False,
+        passport: TrustPassport | None = None,
     ) -> dict[str, Any]:
         """Execute trust evaluation. Called by CrewAI when an agent uses this tool."""
         result = evaluate_trust(
@@ -57,7 +37,7 @@ class TrustEvaluationTool:
         verdict = "ACT" if result.should_proceed else "ESCALATE"
         record = result.accountability_record
 
-        return {
+        output: dict[str, Any] = {
             "verdict": verdict,
             "should_proceed": result.should_proceed,
             "confidence": confidence,
@@ -66,6 +46,19 @@ class TrustEvaluationTool:
             "record_id": record.record_id if record else "",
             "reasons": list(record.reasons) if record else [],
         }
+
+        if isinstance(passport, TrustPassport):
+            stamp = PassportStamp(
+                agent_id="crewai_tool",
+                action="evaluate",
+                confidence_at_action=confidence,
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                evidence_added=(),
+            )
+            updated_passport = passport.add_stamp(stamp)
+            output["passport"] = updated_passport
+
+        return output
 
     def run(self, **kwargs: Any) -> dict[str, Any]:
         """Public entry point — delegates to _run."""
