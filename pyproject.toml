@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cognilateral-trust"
-version = "1.1.0"
+version = "1.2.0"
 description = "Epistemic trust layer for AI agents — confidence tiers, routing, and accountability"
 readme = "README.md"
 license = "Apache-2.0"
@@ -24,6 +24,7 @@ classifiers = [
 
 [project.scripts]
 trust-check = "cognilateral_trust.cli:main"
+cognilateral-trust-mcp = "cognilateral_trust.mcp.main:run"
 
 [project.urls]
 Homepage = "https://cognilateral.com"
@@ -41,3 +42,12 @@ select = ["E", "F", "W"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "a_test: Acceptance test for protocol spec",
+    "b_test: Backward compatibility test",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

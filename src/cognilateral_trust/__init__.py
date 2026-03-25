@@ -23,10 +23,13 @@ from __future__ import annotations
 
 __all__ = [
     "ConfidenceTier",
+    "PassportStamp",
     "ROUTE_BASIC",
     "ROUTE_SOVEREIGNTY_GATE",
     "ROUTE_WARRANT_CHECK",
     "TierRoutingResult",
+    "TrustContext",
+    "TrustPassport",
     "PredictionStore",
     "TrustEvaluation",
     "evaluate_tier_routing",
@@ -48,6 +51,9 @@ __all__ = [
     "TrustMiddleware",
     "async_evaluate_trust",
     "trust_gate",
+    # S5: lifecycle
+    "spawn_gate",
+    "TerminationBlocked",
     # S4: JSONL persistence
     "JSONLAccountabilityStore",
     "JSONLPredictionStore",
@@ -78,7 +84,10 @@ from cognilateral_trust.core import (
     ROUTE_SOVEREIGNTY_GATE,
     ROUTE_WARRANT_CHECK,
     ConfidenceTier,
+    PassportStamp,
     TierRoutingResult,
+    TrustContext,
+    TrustPassport,
     evaluate_tier_routing,
     route_by_tier,
 )
@@ -102,6 +111,10 @@ from cognilateral_trust.middleware import (
     TrustMiddleware,
     async_evaluate_trust,
     trust_gate,
+)
+from cognilateral_trust.lifecycle import (
+    spawn_gate,
+    TerminationBlocked,
 )
 from cognilateral_trust.persistence import (
     JSONLAccountabilityStore,
