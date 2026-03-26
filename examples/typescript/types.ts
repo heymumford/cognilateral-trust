@@ -4,9 +4,12 @@
  * Use with the hosted API at cognilateral.com or self-hosted.
  *
  * Example:
- *   const resp = await fetch('https://cognilateral.com/api/trust/summary');
+ *   const resp = await fetch(`${COGNILATERAL_API_BASE_URL}/api/trust/summary`);
  *   const data: TrustSummary = await resp.json();
  */
+
+/** Default base URL for the hosted Cognilateral API. Override for self-hosted or staging. */
+export const COGNILATERAL_API_BASE_URL = 'https://cognilateral.com';
 
 export interface TrustEvaluation {
   confidence: number;
@@ -79,7 +82,9 @@ export interface SovereigntyResponse {
  * Minimal client for the cognilateral-trust REST API.
  */
 export class TrustClient {
-  constructor(private baseUrl: string = 'https://cognilateral.com') {}
+  constructor(private baseUrl: string = COGNILATERAL_API_BASE_URL) {
+    this.baseUrl = baseUrl.replace(/\/+$/, '');
+  }
 
   async summary(): Promise<TrustSummary> {
     const resp = await fetch(`${this.baseUrl}/api/trust/summary`);
