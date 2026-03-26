@@ -1,10 +1,10 @@
 /**
  * TypeScript types for the cognilateral-trust REST API.
  *
- * Use with the hosted API at cognilateral.fly.dev or self-hosted.
+ * Use with the hosted API at cognilateral.com or self-hosted.
  *
  * Example:
- *   const resp = await fetch('https://cognilateral.fly.dev/api/trust/summary');
+ *   const resp = await fetch('https://cognilateral.com/api/trust/summary');
  *   const data: TrustSummary = await resp.json();
  */
 
@@ -79,7 +79,7 @@ export interface SovereigntyResponse {
  * Minimal client for the cognilateral-trust REST API.
  */
 export class TrustClient {
-  constructor(private baseUrl: string = 'https://cognilateral.fly.dev') {}
+  constructor(private baseUrl: string = 'https://cognilateral.com') {}
 
   async summary(): Promise<TrustSummary> {
     const resp = await fetch(`${this.baseUrl}/api/trust/summary`);
