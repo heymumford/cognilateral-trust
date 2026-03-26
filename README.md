@@ -1,36 +1,12 @@
 # cognilateral-trust
 
-**AI that tells you when it's guessing.**
+**Your AI agent is about to act. Should it?**
 
-An epistemic trust layer for AI agents. Maps confidence to action — so autonomous systems know when to act and when to ask.
+`cognilateral-trust` answers that question. You give it a confidence score. It tells you whether to proceed, verify, or escalate — and produces an immutable audit record of every decision.
 
 [![PyPI](https://img.shields.io/pypi/v/cognilateral-trust)](https://pypi.org/project/cognilateral-trust/)
 [![Python](https://img.shields.io/pypi/pyversions/cognilateral-trust)](https://pypi.org/project/cognilateral-trust/)
 [![License](https://img.shields.io/github/license/heymumford/cognilateral-trust)](LICENSE)
-
-## Live Demo
-
-Dashboard: [cognilateral.fly.dev/trust](https://cognilateral.fly.dev/trust)
-
-CLI:
-```bash
-$ trust-check 0.7
-ACT — C7 (sovereignty_gate)
-
-$ trust-check 0.92 --irreversible
-ESCALATE — C9 (sovereignty_gate): irreversible action at sovereignty-grade tier
-
-$ trust-check 0.3 --json
-{"confidence": 0.3, "tier": "C3", "route": "basic", "should_proceed": true, "verdict": "ACT", ...}
-```
-
-REST API (no install needed):
-```bash
-$ curl -s https://cognilateral.fly.dev/api/trust/summary | jq .calibration.accuracy
-0.0
-```
-
-## Install
 
 ```bash
 pip install cognilateral-trust
@@ -38,101 +14,223 @@ pip install cognilateral-trust
 
 Zero dependencies. Python 3.11+.
 
+---
+
+## What It Is
+
+An epistemic trust layer for AI agents. One function call between your agent's decision and its action.
+
+**The problem:** AI agents act on confidence they haven't earned. A model says "I'm 90% sure" — but is that calibrated? Is this action reversible? Does it affect a person? Most frameworks skip these questions.
+
+**The solution:** `evaluate_trust()` takes a confidence score and returns a routing decision — ACT, verify evidence, or escalate to a human. Every call produces an accountability record. No external services, no API keys, no dependencies.
+
+## How It Works
+
+```
+Your agent's confidence (0.0 → 1.0)
+        │
+        ▼
+┌─────────────────────────────────────┐
+│         evaluate_trust()            │
+│                                     │
+│  1. Map confidence → epistemic tier │
+│     (C0-C9, ten levels)            │
+│                                     │
+│  2. Route by tier:                  │
+│     C0-C3 → basic (act freely)     │
+│     C4-C6 → warrant_check (verify) │
+│     C7-C9 → sovereignty_gate       │
+│                                     │
+│  3. Check context:                  │
+│     - Is this reversible?           │
+│     - Does it touch external systems│
+│     - Welfare constraint (D-05)     │
+│                                     │
+│  4. Return: ACT or ESCALATE        │
+│     + accountability record         │
+└─────────────────────────────────────┘
+        │
+        ▼
+  ACT (safe to proceed)
+  — or —
+  ESCALATE (needs human review, with reasons)
+```
+
+## What You Put In
+
+| Input | Type | Required | What It Means |
+|-------|------|----------|---------------|
+| `confidence` | `float` (0.0-1.0) | Yes | How confident is your agent in this action? |
+| `is_reversible` | `bool` | No (default: `True`) | Can this action be undone? |
+| `touches_external` | `bool` | No (default: `False`) | Does this affect systems outside your control? |
+| `context` | `dict` | No | Free-form metadata for the audit trail |
+
+**That's it.** One float is the minimum. The other parameters sharpen the routing.
+
+## What You Get Out
+
+| Output | Type | What It Tells You |
+|--------|------|-------------------|
+| `should_proceed` | `bool` | **The answer.** Act or escalate. |
+| `verdict` | `str` | `"ACT"` or `"ESCALATE"` |
+| `tier` | `ConfidenceTier` | Which of 10 epistemic tiers (C0-C9) this confidence maps to |
+| `route` | `str` | `"basic"`, `"warrant_check"`, or `"sovereignty_gate"` |
+| `accountability_record` | `AccountabilityRecord` | Immutable record: who decided, why, when, at what confidence |
+
+The accountability record is the durable value. It answers "why did the agent do that?" after the fact.
+
 ## Quick Start
 
 ```python
 from cognilateral_trust import evaluate_trust
 
+# Your agent has 70% confidence in its next action
 result = evaluate_trust(0.7)
 
 if result.should_proceed:
     perform_action()
 else:
-    print(f"Escalate: {result.accountability_record.reasons}")
+    escalate_to_human(result.accountability_record.reasons)
 ```
 
-Every call produces an immutable accountability record — who decided, why, and at what confidence level.
+### With context
 
-## What It Does
-
-Your AI agent is about to take an action. How confident is it? And is that confidence warranted?
-
-`cognilateral-trust` answers three questions:
-
-1. **What tier is this confidence?** Maps 0.0-1.0 to C0-C9 epistemic tiers
-2. **What route should it take?** Basic (act freely), warrant check (verify evidence), or sovereignty gate (require approval)
-3. **Should it proceed?** Considers reversibility, external impact, and confidence level
-
-```
-Confidence 0.0-0.3  →  C0-C3  →  basic           →  act freely
-Confidence 0.4-0.6  →  C4-C6  →  warrant_check   →  verify evidence first
-Confidence 0.7-1.0  →  C7-C9  →  sovereignty_gate →  require approval for irreversible actions
+```python
+result = evaluate_trust(
+    0.85,
+    is_reversible=False,     # can't undo this
+    touches_external=True,   # affects a live system
+)
+# verdict: ESCALATE — irreversible + external at sovereignty-gate tier
 ```
 
-## Confidence Extraction
+### Extract confidence from LLM output
 
-Extract confidence signals from LLM responses — no external dependencies.
+Don't have a confidence score? Extract one from the LLM's response:
 
 ```python
 from cognilateral_trust import extract_confidence
 
-# Auto-detect format (OpenAI, Anthropic, or plain text)
-conf = extract_confidence(openai_response)
+# Works with OpenAI response dicts, Anthropic response dicts, or plain text
+confidence = extract_confidence(llm_response)
+result = evaluate_trust(confidence)
+```
 
-# From plain text
+```python
 from cognilateral_trust import extract_confidence_from_text
-conf = extract_confidence_from_text("I'm about 73% confident in this answer")
+
+confidence = extract_confidence_from_text("I'm about 73% confident in this answer")
 # => 0.73
 ```
 
-Parses explicit percentages, decimal values, verbal qualifiers ("highly confident", "somewhat uncertain"), and logprobs from OpenAI/Anthropic response dicts.
+Parses percentages, decimals, verbal qualifiers ("highly confident", "somewhat uncertain"), and logprobs.
 
-## Warrants
+---
 
-Evidence-backed confidence that decays over time. A Warrant wraps a confidence value with provenance and a TTL — the effective confidence degrades linearly as the warrant ages, reaching zero at expiry.
+## Deeper Capabilities
+
+### Calibration — Learn From Outcomes
+
+Track whether your agent's confidence was actually justified:
 
 ```python
-from cognilateral_trust import Warrant, evaluate_warrant, evaluate_trust_with_warrant
+from cognilateral_trust import CalibratedTrustEngine
 
-w = Warrant(
+engine = CalibratedTrustEngine()
+
+# Evaluate
+eval_id = engine.evaluate(0.8)
+
+# Later, record what actually happened
+engine.record_outcome(eval_id, correct=True)
+
+# Get calibration stats
+stats = engine.calibration_report()
+# Brier score, ECE, per-tier accuracy
+```
+
+Over time, this tells you: "When your agent says 80%, is it right 80% of the time?"
+
+### Warrants — Evidence-Backed Confidence That Decays
+
+Confidence should erode when evidence gets stale:
+
+```python
+from cognilateral_trust import Warrant, evaluate_trust_with_warrant
+
+warrant = Warrant(
     confidence=0.9,
     evidence_source="unit tests pass",
-    ttl_seconds=3600,
+    ttl_seconds=3600,  # valid for 1 hour
 )
 
-# Current effective confidence (decays toward 0 as TTL expires)
-effective = evaluate_warrant(w)
-
-# Full trust evaluation using warrant's decayed confidence
-result = evaluate_trust_with_warrant(w)
+# Effective confidence decays linearly toward 0 as the warrant ages
+result = evaluate_trust_with_warrant(warrant)
 ```
 
-`WarrantStore` manages collections of warrants with automatic expiry and lookup by key or evidence source.
+### Claims Extraction + Fidelity Verification
 
-## Middleware
-
-Trust-gated execution for pipelines and frameworks.
+Extract claims from text and verify them against source material:
 
 ```python
-from cognilateral_trust import trust_gate, TrustMiddleware
+from cognilateral_trust import extract_claims, verify_fidelity
 
-# Decorator — raises TrustEscalation if confidence < threshold
-@trust_gate(min_confidence=0.6)
-def deploy(confidence: float, **kwargs):
-    ...
+# Extract structured claims
+claims = extract_claims("The model achieves 95% accuracy, outperforming GPT-4.")
+# => [factual: "achieves 95% accuracy", comparative: "outperforming GPT-4"]
 
-# Async evaluation
-from cognilateral_trust import async_evaluate_trust
-result = await async_evaluate_trust(0.8, is_reversible=False)
-
-# Pipeline middleware
-mw = TrustMiddleware(min_confidence=0.5, on_escalation="raise")
-result = mw(0.7, context={"action": "deploy"})
+# Verify against source
+result = verify_fidelity(
+    claim="The system handles 10,000 requests per second",
+    source="Our benchmarks show 10,000 req/s under load",
+)
+# result.supported = True, result.score = 0.78
 ```
 
-## Persistence
+### Epistemic Firewall — Prevent Acting on Hunches
 
-JSONL-backed stores that survive restarts. Drop-in replacements for the in-memory stores.
+Block actions that demand tested evidence when only hunches exist:
+
+```python
+from cognilateral_trust import check_epistemic_mismatch, EpistemicLevel
+
+result = check_epistemic_mismatch(
+    demanded=EpistemicLevel.VALIDATED,  # deploy requires validated evidence
+    supplied=EpistemicLevel.OBSERVED,   # we only have observations
+)
+# result.is_mismatch = True, result.gap = 3
+```
+
+Seven levels: `RAW` < `OBSERVED` < `MEASURED` < `TESTED` < `VALIDATED` < `FALSIFIABLE` < `GOVERNANCE`.
+
+### Sovereignty Gate — The Welfare Constraint
+
+The D-05 hard constraint: welfare-critical actions **always** escalate, regardless of confidence:
+
+```python
+from cognilateral_trust import evaluate_sovereignty
+
+decision = evaluate_sovereignty(
+    confidence=0.99,
+    is_reversible=True,
+    tests_pass=True,
+    welfare_affected=True,  # someone's wellbeing is at stake
+)
+# verdict: ESCALATE — welfare gate overrides confidence
+```
+
+### Middleware + Decorators
+
+```python
+from cognilateral_trust import trust_gate
+
+@trust_gate(min_confidence=0.6)
+def deploy(confidence: float, **kwargs):
+    """Only runs if confidence >= 0.6"""
+    ...
+```
+
+### Persistence — Survive Restarts
 
 ```python
 from cognilateral_trust import JSONLPredictionStore, JSONLAccountabilityStore
@@ -141,94 +239,18 @@ predictions = JSONLPredictionStore("./data/predictions.jsonl")
 accountability = JSONLAccountabilityStore("./data/accountability.jsonl")
 ```
 
-Load on init, append on write, skip corrupt lines gracefully. Thread-safe.
-
-## Claim Extraction
-
-Extract typed claims from free-form text using regex and rule-based heuristics. No NLP dependencies required.
+### Agent Lifecycle — Trust-Gated Spawning
 
 ```python
-from cognilateral_trust import extract_claims
+from cognilateral_trust import spawn_gate
 
-claims = extract_claims("The model achieves 95% accuracy, outperforming GPT-4.")
-
-for claim in claims.claims:
-    print(f"{claim.claim_type}: {claim.text}")
-# factual: The model achieves 95% accuracy
-# comparative: outperforming GPT-4
+@spawn_gate(min_confidence=0.7)
+def create_worker(confidence: float):
+    """Only spawns if parent agent has sufficient trust"""
+    ...
 ```
 
-Detects `factual`, `causal`, `comparative`, and `quantitative` claim types with source-span provenance.
-
-## Fidelity Verification
-
-Verify that a claim is actually supported by its source text using word-overlap heuristics (Jaccard/overlap coefficient).
-
-```python
-from cognilateral_trust import verify_fidelity
-
-result = verify_fidelity(
-    claim="The system processes 10,000 requests per second",
-    source="Our benchmarks show the system handles 10,000 req/s under load",
-)
-
-print(result.supported)   # True
-print(result.score)       # 0.78
-print(result.method)      # "overlap"
-```
-
-`verify_fidelity_batch()` checks multiple claims against a source in one call.
-
-## Epistemic Firewall
-
-Detects when an action demands a higher epistemic level than the evidence supplies. Prevents agents from acting on hunches when the situation calls for tested facts.
-
-```python
-from cognilateral_trust import EpistemicFirewall, EpistemicLevel, check_epistemic_mismatch
-
-# Quick check
-result = check_epistemic_mismatch(
-    demanded=EpistemicLevel.VALIDATED,
-    supplied=EpistemicLevel.OBSERVED,
-)
-print(result.is_mismatch)  # True
-print(result.gap)          # 3
-
-# Registry-based firewall
-fw = EpistemicFirewall()
-fw.register("deploy", EpistemicLevel.TESTED)
-fw.register("draft", EpistemicLevel.RAW)
-
-fw.check("deploy", supplied=EpistemicLevel.OBSERVED)  # MismatchResult(is_mismatch=True, ...)
-fw.check("draft", supplied=EpistemicLevel.RAW)          # MismatchResult(is_mismatch=False, ...)
-```
-
-Seven levels: `RAW` < `OBSERVED` < `MEASURED` < `TESTED` < `VALIDATED` < `FALSIFIABLE` < `GOVERNANCE`.
-
-## Sovereignty Gate
-
-The D-07 governance contract — decides whether an agent may act autonomously or must escalate to human review. Includes the D-05 welfare hard constraint: welfare-critical actions **always** escalate, regardless of confidence.
-
-```python
-from cognilateral_trust import evaluate_sovereignty, sovereignty_gate
-
-# Evaluate directly
-decision = evaluate_sovereignty(
-    confidence=0.8,
-    is_reversible=True,
-    tests_pass=True,
-    welfare_affected=False,
-    external_impact=0,
-)
-print(decision.verdict)  # "ACT"
-
-# As a decorator — wraps functions with automatic sovereignty checks
-@sovereignty_gate(confidence_param="conf")
-def autonomous_action(conf: float, **kwargs):
-    return "executed"
-```
-
-`SovereigntyPolicy` configures thresholds. `DEFAULT_POLICY` provides reasonable defaults (min confidence 0.5, reversibility required, tests must pass, welfare gate active).
+---
 
 ## Framework Integrations
 
@@ -237,75 +259,77 @@ def autonomous_action(conf: float, **kwargs):
 ```python
 from cognilateral_trust import evaluate_trust
 
-def trust_gate(state):
+def trust_node(state):
     result = evaluate_trust(state["confidence"])
     return {**state, "proceed": result.should_proceed}
 ```
 
-See [`examples/langgraph_trust_node.py`](examples/langgraph_trust_node.py) for a full LangGraph integration.
+Full example: [`examples/langgraph_trust_node.py`](examples/langgraph_trust_node.py)
 
 ### CrewAI
 
 ```python
 from cognilateral_trust import evaluate_trust
 
-def trust_check(confidence, action="unknown", **kwargs):
+def trust_check(confidence, **kwargs):
     result = evaluate_trust(confidence, **kwargs)
     return "PROCEED" if result.should_proceed else f"ESCALATE: {result.accountability_record.reasons}"
 ```
 
-See [`examples/crewai_trust_tool.py`](examples/crewai_trust_tool.py) for a full CrewAI tool.
+Full example: [`examples/crewai_trust_tool.py`](examples/crewai_trust_tool.py)
 
 ### Any Framework
 
-`evaluate_trust()` is framework-agnostic. It takes a float, returns a decision. Wrap it in whatever your framework expects.
+`evaluate_trust()` takes a float, returns a decision. Wrap it however your framework expects.
 
-## API
+---
 
-### `evaluate_trust(confidence, *, is_reversible=True, touches_external=False, context=None)`
+## CLI
 
-Returns a `TrustEvaluation`:
+```bash
+$ trust-check 0.7
+ACT — C7 (sovereignty_gate)
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `confidence` | `float` | Input confidence (0.0-1.0) |
-| `tier` | `ConfidenceTier` | C0-C9 epistemic tier |
-| `route` | `str` | `"basic"`, `"warrant_check"`, or `"sovereignty_gate"` |
-| `should_proceed` | `bool` | Whether the action should go ahead |
-| `accountability_record` | `AccountabilityRecord` | Immutable audit trail entry |
+$ trust-check 0.92 --irreversible
+ESCALATE — C9 (sovereignty_gate): irreversible action at sovereignty-grade tier
 
-### `route_by_tier(tier)` / `evaluate_tier_routing(tier)`
+$ trust-check 0.3 --json
+{"confidence": 0.3, "tier": "C3", "route": "basic", "should_proceed": true, ...}
+```
 
-Lower-level routing if you need direct tier control.
+## Hosted API
 
-### `AccountabilityStore`
+Don't want to install anything? Use the hosted API:
 
-Thread-safe in-memory store for accountability records. Every decision gets logged.
+```bash
+curl -X POST https://cognilateral.com/api/v1/evaluate \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"confidence": 0.7, "is_reversible": true, "touches_external": false}'
+```
+
+Sign up at [cognilateral.com](https://cognilateral.com) — free tier includes 100 evaluations/day.
 
 ## Examples
 
-| Example | Description |
-|---------|-------------|
-| [`demo_trust_agent.py`](examples/demo_trust_agent.py) | Full trust agent demo with extraction, warrants, and sovereignty |
-| [`demo_calibration_loop.py`](examples/demo_calibration_loop.py) | Calibration loop with prediction tracking |
-| [`langgraph_trust_node.py`](examples/langgraph_trust_node.py) | Trust gate node for LangGraph pipelines |
+| Example | What It Shows |
+|---------|---------------|
+| [`demo_trust_agent.py`](examples/demo_trust_agent.py) | Full agent with extraction, warrants, and sovereignty |
+| [`demo_calibration_loop.py`](examples/demo_calibration_loop.py) | Track and improve agent calibration over time |
+| [`langgraph_trust_node.py`](examples/langgraph_trust_node.py) | Trust gate for LangGraph pipelines |
 | [`crewai_trust_tool.py`](examples/crewai_trust_tool.py) | CrewAI tool wrapping trust evaluation |
-| [`openai_trust_wrapper.py`](examples/openai_trust_wrapper.py) | Confidence extraction wrapper for OpenAI calls |
-| [`anthropic_trust_wrapper.py`](examples/anthropic_trust_wrapper.py) | Confidence extraction wrapper for Anthropic calls |
+| [`openai_trust_wrapper.py`](examples/openai_trust_wrapper.py) | Confidence extraction from OpenAI responses |
+| [`anthropic_trust_wrapper.py`](examples/anthropic_trust_wrapper.py) | Confidence extraction from Anthropic responses |
 | [`dspy_trust_module.py`](examples/dspy_trust_module.py) | DSPy module with trust-gated assertions |
-| [`mem0_trust_provider.py`](examples/mem0_trust_provider.py) | Memory confidence scoring for Mem0 agent memories |
-| [`cognee_trust_layer.py`](examples/cognee_trust_layer.py) | Knowledge graph trust gates for Cognee |
-| [`load_simulator.py`](examples/load_simulator.py) | Concurrent load testing for trust evaluation throughput |
-| [`http_trust_proxy.py`](examples/http_trust_proxy.py) | HTTP trust proxy with REST API |
-| [`github_actions_trust_gate.yml`](examples/github_actions_trust_gate.yml) | CI trust gate for auto-merge decisions in GitHub Actions |
+| [`github_actions_trust_gate.yml`](examples/github_actions_trust_gate.yml) | CI gate: block auto-merge when confidence is low |
 
 ## Why This Exists
 
 Guardrails protect systems. Trust protects people.
 
-When an AI agent acts with misplaced confidence, the person at the other end bears the cost — the student who gets a zero because the AI fabricated a source, the operator who ships a broken deploy at 3am because the AI said it was fine.
+When an AI agent acts on misplaced confidence, the person at the other end pays — the patient who gets a wrong diagnosis, the student who gets a fabricated citation, the operator who ships a broken deploy at 3am because the model said it was fine.
 
-This library exists so AI systems can say "I'm not sure enough to act on this" before the damage happens.
+This library exists so AI systems can say "I'm not sure enough to act on this" **before** the damage happens.
 
 ## License
 
