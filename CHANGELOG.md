@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-27
+
+### Added
+- **Open consent** (D5) — `ConsentProfile` lets the person downstream configure trust sensitivity. Consent can only make evaluation stricter, never weaker. D-05 welfare constraint always enforced.
+- **Nutrition label** (D6) — `nutrition_label()` generates standard disclosure: "Trust evaluated. Confidence: 0.70 (C7). Verdict: ACT." `not_evaluated_label()` for skipped responses.
+- **TrustBench calibration results** (D4) — published at `docs/CALIBRATION.md`. Overall ECE: 0.375 across 200 scenarios. Falsifiable.
+- **TrustBench model comparison** — qwen3:8b (0.51), qwen3:32b (0.50), coder:32b (0.33). Model size does not improve calibration.
+
 ## [1.2.0] - 2026-03-25
 
 ### Added
