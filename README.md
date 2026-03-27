@@ -14,6 +14,19 @@ pip install cognilateral-trust
 
 Zero dependencies. Python 3.11+.
 
+### Calibration (TrustBench v1.2.0)
+
+| Domain | Calibration Error | Scenarios |
+|--------|------------------:|----------:|
+| Factual | 0.575 | 40 |
+| Reasoning | 0.550 | 40 |
+| Ambiguous | 0.250 | 40 |
+| Out-of-distribution | 0.250 | 40 |
+| Adversarial | 0.250 | 40 |
+| **Overall** | **0.375** | **200** |
+
+Lower is better. Run `trust-bench run --model your-model` to reproduce. [Full methodology](docs/CALIBRATION.md).
+
 ---
 
 ## What It Is
