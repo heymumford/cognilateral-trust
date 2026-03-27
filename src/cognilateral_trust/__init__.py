@@ -81,6 +81,10 @@ __all__ = [
     "NutritionLabel",
     "nutrition_label",
     "not_evaluated_label",
+    # D5: open consent
+    "ConsentProfile",
+    "ConsentResult",
+    "evaluate_with_consent",
 ]
 
 from cognilateral_trust.core import (
@@ -152,4 +156,9 @@ from cognilateral_trust.nutrition import (
     NutritionLabel,
     not_evaluated_label,
     nutrition_label,
+)
+from cognilateral_trust.consent import (
+    ConsentProfile,
+    ConsentResult,
+    evaluate_with_consent,
 )
