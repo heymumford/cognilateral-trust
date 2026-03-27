@@ -138,6 +138,29 @@ confidence = extract_confidence_from_text("I'm about 73% confident in this answe
 
 Parses percentages, decimals, verbal qualifiers ("highly confident", "somewhat uncertain"), and logprobs.
 
+### Nutrition Label — Tell the End User
+
+Attach a standard disclosure to any AI-generated output:
+
+```python
+from cognilateral_trust import nutrition_label
+
+label = nutrition_label(0.7, calibration_accuracy=0.625)
+print(label)
+# Trust evaluated. Confidence: 0.70 (C7). Calibration: 62.5%. Verdict: ACT.
+```
+
+For responses that weren't evaluated:
+
+```python
+from cognilateral_trust import not_evaluated_label
+
+label = not_evaluated_label()
+# Not trust-evaluated. No confidence assessment was performed on this response.
+```
+
+The person downstream deserves to know.
+
 ---
 
 ## Deeper Capabilities

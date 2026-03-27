@@ -77,6 +77,10 @@ __all__ = [
     "SovereigntyPolicy",
     "evaluate_sovereignty",
     "sovereignty_gate",
+    # D6: nutrition label
+    "NutritionLabel",
+    "nutrition_label",
+    "not_evaluated_label",
 ]
 
 from cognilateral_trust.core import (
@@ -143,4 +147,9 @@ from cognilateral_trust.sovereignty import (
     SovereigntyPolicy,
     evaluate_sovereignty,
     sovereignty_gate,
+)
+from cognilateral_trust.nutrition import (
+    NutritionLabel,
+    not_evaluated_label,
+    nutrition_label,
 )
