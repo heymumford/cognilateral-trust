@@ -150,7 +150,7 @@ CONSERVATIVE = ConsentProfile(
     min_confidence=0.8,
     always_escalate_irreversible=True,
     always_escalate_external=True,
-    require_calibration=True,
+    require_calibration=False,
     max_tier_for_auto_act=7,
 )
 
