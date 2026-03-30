@@ -14,7 +14,7 @@ pip install cognilateral-trust
 
 Zero dependencies. Python 3.11+.
 
-### Calibration (TrustBench v1.2.0)
+### Calibration (TrustBench v1.0.0)
 
 | Domain | Calibration Error | Scenarios |
 |--------|------------------:|----------:|

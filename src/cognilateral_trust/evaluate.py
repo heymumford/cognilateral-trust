@@ -47,6 +47,9 @@ def evaluate_trust(
         else:
             escalate(result.accountability_record.reasons)
     """
+    if not isinstance(confidence, (int, float)):
+        raise TypeError(f"confidence must be a number, got {type(confidence).__name__}")
+    confidence = max(0.0, min(1.0, float(confidence)))
     tier_val = min(9, max(0, int(confidence * 10)))
     tier = ConfidenceTier(tier_val)
     routing = evaluate_tier_routing(tier_val)
