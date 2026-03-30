@@ -85,7 +85,6 @@ Your agent's confidence (0.0 → 1.0)
 | Output | Type | What It Tells You |
 |--------|------|-------------------|
 | `should_proceed` | `bool` | **The answer.** Act or escalate. |
-| `verdict` | `str` | `"ACT"` or `"ESCALATE"` |
 | `tier` | `ConfidenceTier` | Which of 10 epistemic tiers (C0-C9) this confidence maps to |
 | `route` | `str` | `"basic"`, `"warrant_check"`, or `"sovereignty_gate"` |
 | `accountability_record` | `AccountabilityRecord` | Immutable record: who decided, why, when, at what confidence |
