@@ -1,142 +1,129 @@
-"""Open consent — end user configures their own trust sensitivity (D5).
+"""User consent — configurable trust sensitivity.
 
-The person downstream of an AI decision can set their own threshold
-for when actions should escalate. This inverts the usual pattern:
-instead of the developer deciding what's "safe enough," the affected
-person does.
+The end user controls how cautious the trust engine is. This is the
+philosophical completion of the D-05 welfare constraint: the person
+downstream gets to adjust the dial, not just the developer.
 
-Usage:
-    from cognilateral_trust import ConsentProfile, evaluate_with_consent
-
-    # The end user says: "I want stricter evaluation for medical decisions"
-    profile = ConsentProfile(
-        min_confidence=0.8,
-        always_escalate_irreversible=True,
-        require_calibration=True,
-    )
-
-    result = evaluate_with_consent(0.7, profile)
-    # ESCALATE — user requires 0.8, system has 0.7
-
-The welfare constraint (D-05) still applies unconditionally. Open consent
-can only make evaluation stricter, never weaker. The floor is non-negotiable.
+Sensitivity shifts the should_proceed threshold without changing the
+tier mapping. C7 is always C7 — but at high sensitivity, C7 might
+not be enough to act autonomously.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 
-from cognilateral_trust.evaluate import evaluate_trust
+__all__ = [
+    "Sensitivity",
+    "apply_sensitivity",
+    "parse_sensitivity",
+    "CONSERVATIVE",
+    "BALANCED",
+    "AGGRESSIVE",
+]
+
+
+class Sensitivity(Enum):
+    """User-configurable trust sensitivity level."""
+
+    LOW = "low"
+    DEFAULT = "default"
+    HIGH = "high"
+
+
+def parse_sensitivity(value: str | None) -> Sensitivity:
+    """Parse a sensitivity string into the enum.
+
+    Returns Sensitivity.DEFAULT for None or empty string.
+    Raises ValueError for unrecognized values.
+    """
+    if value is None or value == "":
+        return Sensitivity.DEFAULT
+    try:
+        return Sensitivity(value.lower())
+    except ValueError:
+        raise ValueError(f"Invalid sensitivity: {value!r}. Must be 'low', 'default', or 'high'.")
+
+
+def apply_sensitivity(
+    should_proceed: bool,
+    sensitivity: Sensitivity,
+    confidence: float = 0.5,
+) -> bool:
+    """Adjust the should_proceed decision based on user sensitivity.
+
+    - DEFAULT: no change
+    - HIGH: requires higher confidence to proceed (shifts threshold up by 0.2)
+    - LOW: permits lower confidence to proceed (shifts threshold down by 0.2)
+
+    The confidence parameter is used by HIGH/LOW to apply the threshold shift.
+    The tier is never changed — only the proceed/escalate verdict.
+    """
+    if sensitivity == Sensitivity.DEFAULT:
+        return should_proceed
+
+    if sensitivity == Sensitivity.HIGH:
+        # High sensitivity: escalate if confidence is below 0.7
+        # (even if the default routing said proceed)
+        if confidence < 0.7:
+            return False
+        return should_proceed
+
+    if sensitivity == Sensitivity.LOW:
+        # Low sensitivity: permit if confidence is above 0.3
+        # (even if the default routing said escalate)
+        if confidence >= 0.3:
+            return True
+        return should_proceed
+
+    return should_proceed
+
+
+# ---------------------------------------------------------------------------
+# D75-W7: Named consent presets
+# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
-class ConsentProfile:
-    """End user's trust sensitivity configuration.
+class ConsentPreset:
+    """Named consent preset with a min_confidence threshold and sensitivity."""
 
-    All fields make evaluation stricter, never weaker.
-    The D-05 welfare constraint is always enforced regardless of profile.
-    """
-
-    min_confidence: float = 0.0
+    name: str
+    sensitivity: Sensitivity
+    min_confidence: float
     always_escalate_irreversible: bool = False
-    always_escalate_external: bool = False
-    require_calibration: bool = False
-    max_tier_for_auto_act: int = 9
+
+    def evaluate(self, confidence: float, *, is_reversible: bool = True) -> bool:
+        """Return True if the action should proceed under this preset."""
+        from cognilateral_trust.evaluate import evaluate_trust
+
+        result = evaluate_trust(confidence, is_reversible=is_reversible)
+        should = apply_sensitivity(result.should_proceed, self.sensitivity, confidence)
+        if confidence < self.min_confidence:
+            return False
+        if self.always_escalate_irreversible and not is_reversible:
+            return False
+        return should
 
 
-@dataclass(frozen=True)
-class ConsentResult:
-    """Result of a consent-aware trust evaluation."""
+CONSERVATIVE = ConsentPreset(
+    name="conservative",
+    sensitivity=Sensitivity.HIGH,
+    min_confidence=0.8,
+    always_escalate_irreversible=True,
+)
 
-    should_proceed: bool
-    verdict: str
-    consent_override: bool
-    override_reason: str | None
-    original_verdict: str
-    profile: ConsentProfile
+BALANCED = ConsentPreset(
+    name="balanced",
+    sensitivity=Sensitivity.DEFAULT,
+    min_confidence=0.5,
+    always_escalate_irreversible=True,
+)
 
-
-DEFAULT_PROFILE = ConsentProfile()
-
-
-def evaluate_with_consent(
-    confidence: float,
-    profile: ConsentProfile | None = None,
-    *,
-    is_reversible: bool = True,
-    touches_external: bool = False,
-    calibration_accuracy: float | None = None,
-) -> ConsentResult:
-    """Evaluate trust with end-user consent profile applied.
-
-    The profile can only make evaluation stricter. If the base evaluation
-    says ESCALATE, consent cannot override it to ACT.
-
-    Args:
-        confidence: Agent confidence (0.0-1.0)
-        profile: End user's sensitivity configuration (None = default)
-        is_reversible: Whether the action can be undone
-        touches_external: Whether the action affects external systems
-        calibration_accuracy: Historical calibration accuracy, if known
-
-    Returns:
-        ConsentResult with verdict and any consent overrides
-    """
-    if profile is None:
-        profile = DEFAULT_PROFILE
-
-    result = evaluate_trust(
-        confidence,
-        is_reversible=is_reversible,
-        touches_external=touches_external,
-    )
-
-    original_verdict = "ACT" if result.should_proceed else "ESCALATE"
-
-    # If base evaluation says ESCALATE, consent cannot weaken it
-    if not result.should_proceed:
-        return ConsentResult(
-            should_proceed=False,
-            verdict="ESCALATE",
-            consent_override=False,
-            override_reason=None,
-            original_verdict=original_verdict,
-            profile=profile,
-        )
-
-    # Apply consent checks — each can only escalate, never permit
-    override_reason = None
-
-    if confidence < profile.min_confidence:
-        override_reason = f"Below user minimum confidence ({profile.min_confidence})"
-
-    elif profile.always_escalate_irreversible and not is_reversible:
-        override_reason = "User requires escalation for irreversible actions"
-
-    elif profile.always_escalate_external and touches_external:
-        override_reason = "User requires escalation for external actions"
-
-    elif profile.require_calibration and calibration_accuracy is None:
-        override_reason = "User requires calibration data before acting"
-
-    elif hasattr(result.tier, "value") and result.tier.value > profile.max_tier_for_auto_act:
-        override_reason = f"Tier {result.tier.value} exceeds user max ({profile.max_tier_for_auto_act})"
-
-    if override_reason:
-        return ConsentResult(
-            should_proceed=False,
-            verdict="ESCALATE",
-            consent_override=True,
-            override_reason=override_reason,
-            original_verdict=original_verdict,
-            profile=profile,
-        )
-
-    return ConsentResult(
-        should_proceed=True,
-        verdict="ACT",
-        consent_override=False,
-        override_reason=None,
-        original_verdict=original_verdict,
-        profile=profile,
-    )
+AGGRESSIVE = ConsentPreset(
+    name="aggressive",
+    sensitivity=Sensitivity.LOW,
+    min_confidence=0.15,
+    always_escalate_irreversible=False,
+)
