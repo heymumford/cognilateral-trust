@@ -140,3 +140,32 @@ def evaluate_with_consent(
         original_verdict=original_verdict,
         profile=profile,
     )
+
+
+# ---------------------------------------------------------------------------
+# D75-W7: Named consent presets (convenience wrappers over ConsentProfile)
+# ---------------------------------------------------------------------------
+
+CONSERVATIVE = ConsentProfile(
+    min_confidence=0.8,
+    always_escalate_irreversible=True,
+    always_escalate_external=True,
+    require_calibration=True,
+    max_tier_for_auto_act=7,
+)
+
+BALANCED = ConsentProfile(
+    min_confidence=0.5,
+    always_escalate_irreversible=True,
+    always_escalate_external=False,
+    require_calibration=False,
+    max_tier_for_auto_act=9,
+)
+
+AGGRESSIVE = ConsentProfile(
+    min_confidence=0.15,
+    always_escalate_irreversible=False,
+    always_escalate_external=False,
+    require_calibration=False,
+    max_tier_for_auto_act=9,
+)
