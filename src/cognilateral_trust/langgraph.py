@@ -16,7 +16,7 @@ back to state. The conditional edge function routes based on `should_proceed`.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any
 
 
@@ -29,6 +29,8 @@ class TrustNode:
     """
 
     confidence_key: str = "confidence"
+    reversible_key: str = "is_reversible"
+    external_key: str = "touches_external"
     verdict_key: str = "trust_verdict"
     tier_key: str = "trust_tier"
     proceed_key: str = "should_proceed"
@@ -40,6 +42,7 @@ class TrustNode:
 
         confidence = state.get(self.confidence_key)
 
+        # Missing confidence → escalate
         if confidence is None:
             return {
                 self.verdict_key: "ESCALATE",
@@ -48,22 +51,39 @@ class TrustNode:
                 self.label_key: {"evaluated": False, "reason": "no confidence provided"},
             }
 
-        result = evaluate_trust(float(confidence))
+        # Validate confidence is numeric
+        try:
+            conf = float(confidence)
+        except (TypeError, ValueError):
+            return {
+                self.verdict_key: "ESCALATE",
+                self.tier_key: "UNKNOWN",
+                self.proceed_key: False,
+                self.label_key: {"evaluated": False, "reason": f"invalid confidence: {confidence!r}"},
+            }
+
+        is_reversible = bool(state.get(self.reversible_key, True))
+        touches_external = bool(state.get(self.external_key, False))
+
+        result = evaluate_trust(
+            conf,
+            is_reversible=is_reversible,
+            touches_external=touches_external,
+        )
         verdict = "ACT" if result.should_proceed else "ESCALATE"
 
-        label: dict[str, Any] = {"evaluated": True, "confidence": float(confidence), "tier": result.tier.name}
+        # Build nutrition label using the actual API
+        label: dict[str, Any] = {"evaluated": True, "confidence": conf, "tier": result.tier.name}
         try:
-            from cognilateral_trust.nutrition import create_nutrition_label
+            from cognilateral_trust.nutrition import nutrition_label
 
-            nl = create_nutrition_label(
-                confidence=float(confidence),
-                tier=result.tier.value,
-                tier_name=result.tier.name,
-                sensitivity="default",
-                should_proceed=result.should_proceed,
+            nl = nutrition_label(
+                conf,
+                is_reversible=is_reversible,
+                touches_external=touches_external,
             )
-            label = nl.to_dict()
-        except ImportError:
+            label = asdict(nl)
+        except (ImportError, Exception):
             pass
 
         return {
@@ -74,7 +94,7 @@ class TrustNode:
         }
 
 
-# Module-level convenience instances
+# Module-level convenience instance
 _default_node = TrustNode()
 
 
@@ -90,10 +110,12 @@ def trust_gate_node(state: dict[str, Any]) -> dict[str, Any]:
 def trust_should_proceed(state: dict[str, Any]) -> str:
     """Conditional edge function — returns "proceed" or "escalate".
 
+    Uses the default TrustNode's proceed_key for consistency.
+
     Use with graph.add_conditional_edges():
         graph.add_conditional_edges("trust_gate", trust_should_proceed,
                                     {"proceed": "act", "escalate": "review"})
     """
-    if state.get("should_proceed", False):
+    if state.get(_default_node.proceed_key, False):
         return "proceed"
     return "escalate"
