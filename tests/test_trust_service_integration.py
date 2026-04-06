@@ -1,24 +1,24 @@
-"""Tests for OpenClaw TrustProvider integration."""
+"""Tests for TrustServiceProvider integration."""
 
 from __future__ import annotations
 
 
 from cognilateral_trust.core import TrustContext
-from cognilateral_trust.integrations.openclaw import (
-    OpenClawTrustProvider,
+from cognilateral_trust.integrations.trust_service import (
     TrustProvider,
+    TrustServiceProvider,
 )
 
 
-class TestOpenClawTrustProvider:
-    """OpenClawTrustProvider must implement TrustProvider protocol."""
+class TestTrustServiceProvider:
+    """TrustServiceProvider must implement TrustProvider protocol."""
 
     def test_provider_is_trust_provider(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         assert isinstance(provider, TrustProvider)
 
     def test_evaluate_with_high_confidence(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(
             confidence=0.85,
             evidence=("test passed", "integrated"),
@@ -34,7 +34,7 @@ class TestOpenClawTrustProvider:
         assert result.accountability_record.record_id != ""
 
     def test_evaluate_increments_counter(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         assert provider.health()["evaluations_total"] == 0
 
         context = TrustContext(confidence=0.5)
@@ -43,8 +43,7 @@ class TestOpenClawTrustProvider:
         assert provider.health()["evaluations_total"] == 1
 
     def test_evaluate_tracks_escalations(self) -> None:
-        provider = OpenClawTrustProvider()
-        # Low confidence at sovereignty tier should escalate
+        provider = TrustServiceProvider()
         context = TrustContext(
             confidence=0.3,
             action_reversible=False,
@@ -58,7 +57,7 @@ class TestOpenClawTrustProvider:
             assert stats["evaluations_escalated"] > 0
 
     def test_health_returns_dict(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(confidence=0.7)
         provider.evaluate(context)
 
@@ -71,7 +70,7 @@ class TestOpenClawTrustProvider:
         assert "last_evaluation_timestamp" in health
 
     def test_health_calibration_score_valid(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(confidence=0.7)
         provider.evaluate(context)
 
@@ -79,16 +78,15 @@ class TestOpenClawTrustProvider:
         assert 0.0 <= health["calibration_score"] <= 1.0
 
     def test_health_before_any_evaluation(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         health = provider.health()
 
-        # Before any evaluation, should report 0 total and score of 1.0
         assert health["evaluations_total"] == 0
         assert health["calibration_score"] == 1.0
         assert health["evaluations_escalated"] == 0
 
     def test_provider_info_returns_dict(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         info = provider.provider_info()
 
         assert isinstance(info, dict)
@@ -97,7 +95,7 @@ class TestOpenClawTrustProvider:
         assert "capabilities" in info
 
     def test_provider_info_content(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         info = provider.provider_info()
 
         assert info["name"] == "cognilateral-trust"
@@ -107,7 +105,7 @@ class TestOpenClawTrustProvider:
         assert "routing" in str(info["capabilities"]).lower()
 
     def test_provider_info_includes_expected_capabilities(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         info = provider.provider_info()
 
         expected_caps = {
@@ -119,7 +117,7 @@ class TestOpenClawTrustProvider:
         assert expected_caps.issubset(actual_caps)
 
     def test_multiple_evaluations_track_correctly(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
 
         for i in range(5):
             context = TrustContext(confidence=0.5 + i * 0.1)
@@ -129,7 +127,7 @@ class TestOpenClawTrustProvider:
         assert health["evaluations_total"] == 5
 
     def test_evaluate_with_evidence(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(
             confidence=0.75,
             evidence=("unit tests pass", "integration verified", "peer reviewed"),
@@ -143,20 +141,19 @@ class TestOpenClawTrustProvider:
         assert result.accountability_record is not None
 
     def test_evaluate_irreversible_action_low_confidence(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(
-            confidence=0.4,  # Low confidence
-            action_reversible=False,  # Irreversible
+            confidence=0.4,
+            action_reversible=False,
             welfare_relevant=False,
         )
 
         result = provider.evaluate(context)
 
-        # Should escalate due to irreversibility at low confidence
         assert result.should_proceed is False or result.accountability_record is not None
 
     def test_tier_returned_in_evaluation(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(confidence=0.7)
 
         result = provider.evaluate(context)
@@ -165,7 +162,7 @@ class TestOpenClawTrustProvider:
         assert hasattr(result.tier, "name") or hasattr(result.tier, "value")
 
     def test_route_returned_in_evaluation(self) -> None:
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(confidence=0.7)
 
         result = provider.evaluate(context)
@@ -175,7 +172,7 @@ class TestOpenClawTrustProvider:
     def test_health_updates_timestamp(self) -> None:
         import time
 
-        provider = OpenClawTrustProvider()
+        provider = TrustServiceProvider()
         context = TrustContext(confidence=0.7)
 
         before = time.time()

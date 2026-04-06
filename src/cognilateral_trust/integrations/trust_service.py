@@ -1,13 +1,13 @@
-"""OpenClaw TrustProvider — trust evaluation service primitive.
+"""Trust service provider — trust evaluation service primitive.
 
-OpenClaw is the trust primitive for AI orchestration platforms, providing
-declarative routing by confidence tier and accountability for trust decisions.
+Provides declarative routing by confidence tier and accountability for
+trust decisions in AI orchestration platforms.
 
 Usage:
-    from cognilateral_trust.integrations.openclaw import OpenClawTrustProvider
+    from cognilateral_trust.integrations.trust_service import TrustServiceProvider
     from cognilateral_trust import TrustContext
 
-    provider = OpenClawTrustProvider()
+    provider = TrustServiceProvider()
 
     context = TrustContext(
         confidence=0.85,
@@ -48,47 +48,27 @@ class TrustProvider(Protocol):
     """
 
     def evaluate(self, context: TrustContext) -> TrustEvaluation:
-        """Evaluate trust for a decision point.
-
-        Args:
-            context: Epistemic context including confidence, evidence, and constraints.
-
-        Returns:
-            TrustEvaluation with verdict, tier, routing, and accountability record.
-        """
+        """Evaluate trust for a decision point."""
         ...
 
     def health(self) -> dict[str, Any]:
-        """Return health and calibration statistics.
-
-        Returns dict with keys like:
-            - calibration_score (0.0-1.0): How well-calibrated this provider is
-            - evaluations_total (int): Total evaluations processed
-            - evaluations_escalated (int): How many were escalated
-            - last_evaluation_timestamp (float): ISO 8601 or Unix timestamp
-        """
+        """Return health and calibration statistics."""
         ...
 
     def provider_info(self) -> dict[str, Any]:
-        """Return provider metadata and capabilities.
-
-        Returns dict with keys like:
-            - name (str): Provider identifier (e.g., "openclaw-trust-v1")
-            - version (str): Semantic version
-            - capabilities (list[str]): Feature list (e.g., ["routing", "warrants"])
-        """
+        """Return provider metadata and capabilities."""
         ...
 
 
-class OpenClawTrustProvider:
-    """OpenClaw trust provider — epistemic routing for AI agents.
+class TrustServiceProvider:
+    """Trust service provider — epistemic routing for AI agents.
 
     Wraps the core evaluate_trust function and tracks calibration metrics.
     Implements the TrustProvider Protocol for framework integration.
     """
 
     def __init__(self) -> None:
-        """Initialize OpenClaw trust provider."""
+        """Initialize trust service provider."""
         self._total_evaluations = 0
         self._total_escalated = 0
         self._last_evaluation_ts = 0.0
@@ -118,12 +98,7 @@ class OpenClawTrustProvider:
         return result
 
     def health(self) -> dict[str, Any]:
-        """Return health and calibration statistics.
-
-        Returns:
-            Dict with calibration_score, evaluation counts, and last evaluation time.
-        """
-        # Simple calibration: ratio of ACTs to ESCALATEs
+        """Return health and calibration statistics."""
         if self._total_evaluations == 0:
             calibration_score = 1.0
         else:
@@ -138,11 +113,7 @@ class OpenClawTrustProvider:
         }
 
     def provider_info(self) -> dict[str, Any]:
-        """Return provider metadata.
-
-        Returns:
-            Dict with name, version, and capabilities.
-        """
+        """Return provider metadata."""
         return {
             "name": "cognilateral-trust",
             "version": "1.1.0",
