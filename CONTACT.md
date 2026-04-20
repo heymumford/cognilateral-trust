@@ -4,13 +4,11 @@
 
 ## Primary channels
 
-- **Email:** `eric@cognilateral.com` — fastest path to a reply
+- **Discussions:** <https://github.com/heymumford/cognilateral-trust/discussions> — best for questions, ideas, and show-and-tell. Start at the pinned welcome post.
+- **Issues:** <https://github.com/heymumford/cognilateral-trust/issues> — bugs and reproducible problems.
+- **Email:** `eric@cognilateral.com` — for anything you'd rather not post in public.
 - **Status:** <https://cognilateral.com/status>
 - **Changelog:** <https://cognilateral.com/changelog>
-
-## Public discussion
-
-GitHub Discussions and Issues will open when the repo goes public. Until then, email is the open channel. If you have an API key, replying to any cognilateral.com email reaches the maintainer directly.
 
 ## Hosted API (cognilateral.com)
 
