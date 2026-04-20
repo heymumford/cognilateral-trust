@@ -368,7 +368,7 @@ This library exists so AI systems can say "I'm not sure enough to act on this" *
 
 ## Contact
 
-Primary channel: `eric@cognilateral.com`. GitHub Discussions and Issues will open when the repo goes public. See [CONTACT.md](CONTACT.md) for the full list of channels and [docs/PRIVACY.md](docs/PRIVACY.md) for the hosted API's privacy terms.
+Primary channel: `eric@cognilateral.com`. GitHub Discussions and Issues will open when the repo goes public. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md) for the hosted API's privacy terms.
 
 ## License
 

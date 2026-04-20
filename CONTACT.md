@@ -15,12 +15,12 @@ GitHub Discussions and Issues will open when the repo goes public. Until then, e
 ## Hosted API (cognilateral.com)
 
 - **Support:** `eric@cognilateral.com` — API key issues, billing, data-deletion requests
-- **Privacy:** <https://cognilateral.com/privacy> (also at [docs/PRIVACY.md](docs/PRIVACY.md))
+- **Privacy:** <https://cognilateral.com/privacy> (also available as [the privacy policy](docs/PRIVACY.md))
 
 ## Press, briefings, attribution
 
 - `eric@cognilateral.com`
-- Cite the repo, the TrustBench calibration result, and the version (`v1.4.0`). Quotes from the README are covered by Apache-2.0.
+- Cite the repo, the TrustBench calibration result, and the package version you used (from PyPI or your installed `pyproject.toml`). Quotes from the README are covered by Apache-2.0.
 
 ## Security
 

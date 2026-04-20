@@ -14,7 +14,7 @@ I collect nothing. The library runs on your machine, talks to no network service
 
 - **Your email** — captured when you signed up for an API key.
 - **Your API key** — stored as a hash. I cannot recover the plaintext after creation.
-- **Each API request** — timestamp, tier result, response time, and the numeric arguments you sent (`confidence`, `is_reversible`, `touches_external`).
+- **Each API request** — timestamp, tier result, response time, and the arguments you sent: the numeric `confidence` and the boolean flags `is_reversible` and `touches_external`.
 - **The `context` field** — logged verbatim for debugging and accountability. **Do not put PII, secrets, or regulated data in `context`.** If you do, I will delete on request, but I cannot guarantee removal from existing backups.
 - **Your IP address** — logged per request for rate limiting and abuse prevention.
 
@@ -50,7 +50,7 @@ You do not need to give a reason. I will not make you fill out a form.
 
 ## Jurisdiction
 
-I operate from the United States. If you are in the EU, UK, or California, the rights listed above meet or exceed GDPR, UK-GDPR, and CCPA/CPRA baselines. If a specific right in your jurisdiction is missing, email me and I will add it.
+I operate from the United States. If you are in the EU, UK, or California, the rights listed above are intended to align with GDPR, UK-GDPR, and CCPA/CPRA baselines. This is a good-faith engineer's privacy page, not legal advice; specific jurisdictional requirements should be reviewed with counsel for enterprise use. If a specific right in your jurisdiction is missing, email me and I will add it.
 
 ## Changes to this page
 
