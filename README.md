@@ -358,6 +358,13 @@ Sign up at [cognilateral.com](https://cognilateral.com) — free tier includes 1
 | [`dspy_trust_module.py`](examples/dspy_trust_module.py) | DSPy module with trust-gated assertions |
 | [`github_actions_trust_gate.yml`](examples/github_actions_trust_gate.yml) | CI gate: block auto-merge when confidence is low |
 
+## Specifications
+
+Two public specs define the protocol this library implements. Both are versioned and falsifiable — other implementations should interoperate with them.
+
+- [Trust Evaluation Protocol v1](docs/specs/trust-protocol-v1.md) — the wire format, verdict semantics, tier mapping, and conformance requirements.
+- [AI Trust Nutrition Label Spec v1.0](docs/nutrition-label-spec-v1.md) — CC-BY-4.0 standard disclosure format for trust-evaluated AI output.
+
 ## Why This Exists
 
 Guardrails protect systems. Trust protects people.

@@ -6,6 +6,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-04-13
+
+### Added
+- **LangGraph TrustNode** — drop-in trust-gate node for LangGraph pipelines (`cognilateral_trust.integrations.langgraph.trust_gate_node`, `should_proceed`).
+- **Consent presets** — named `ConsentProfile` presets for common deployment profiles (healthcare, finance, consumer).
+- **Top-level re-exports** — network primitives (`decay`, `ContagionTracker`, `weighted_consensus`, `ProvenanceChain`, `sovereign_worker`), lifecycle extensions (`handoff_trust`, `kill_warrant`, `suspend_trust`, `wake_trust`), routing (`RouteRule`, `RouterPolicy`, `route_decision`, `router_trust_policy`), and `AccountabilityRecord` / `AccountabilityStore` are now importable directly from `cognilateral_trust`.
+
+### Changed
+- **`OpenClawTrustProvider` renamed to `TrustServiceProvider`** — neutral naming; any provider-protocol-compliant orchestrator can consume it. Old import path removed. (PR #13)
+- **Input validation hardened** — invalid `confidence` values raise `ValueError` with the exact bound that was violated.
+
+### Fixed
+- `require_calibration` removed — the previous behaviour silently escalated calls when calibration data was absent, which was too conservative. Callers now control this via `ConsentProfile`.
+- Phantom `verdict` field in bug-bash defect fixture removed; `trust-bench` CLI now correctly registers as an entry point.
+
+### Documentation
+- CHANGELOG 1.2.0 advertised `trust_decay` and `ContagionGraph` as public exports. The actual names shipped are `decay` (with helpers `exponential_decay` / `linear_decay`) in `cognilateral_trust.network.decay`, and `ContagionTracker` (with supporting `PropagationEntry` and `ContagionAlert`) in `cognilateral_trust.network.contagion`. Both are now re-exported at the package root. The CHANGELOG 1.2.0 entry is preserved as historical record.
+
 ## [1.3.0] - 2026-03-27
 
 ### Added

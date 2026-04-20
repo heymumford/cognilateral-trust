@@ -5,6 +5,8 @@
 **Scenarios:** 200 (40 per domain)
 **Methodology:** Deterministic confidence → tier → route evaluation. No LLM in the loop.
 
+> **Version note:** These numbers were generated against v1.2.0 and are still canonical for v1.4.0 — no engine changes between those versions affected tier routing, sovereignty gating, or the scoring pipeline. Re-run `trust-bench run` on your own install to verify.
+
 ## What This Measures
 
 TrustBench measures calibration error: the gap between what the system says (confidence tier → routing decision) and what a correctly calibrated system would say.

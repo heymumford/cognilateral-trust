@@ -85,6 +85,31 @@ __all__ = [
     "ConsentProfile",
     "ConsentResult",
     "evaluate_with_consent",
+    # Accountability
+    "AccountabilityRecord",
+    "AccountabilityStore",
+    # Lifecycle (extended)
+    "handoff_trust",
+    "kill_warrant",
+    "suspend_trust",
+    "wake_trust",
+    # Routing
+    "RouteRule",
+    "RouterPolicy",
+    "route_decision",
+    "router_trust_policy",
+    # Network: decay
+    "decay",
+    "exponential_decay",
+    "linear_decay",
+    # Network: contagion
+    "ContagionAlert",
+    "ContagionTracker",
+    "PropagationEntry",
+    # Network: consensus, sovereign, provenance
+    "ProvenanceChain",
+    "sovereign_worker",
+    "weighted_consensus",
 ]
 
 from cognilateral_trust.core import (
@@ -123,7 +148,34 @@ from cognilateral_trust.middleware import (
 from cognilateral_trust.lifecycle import (
     spawn_gate,
     TerminationBlocked,
+    handoff_trust,
+    kill_warrant,
+    suspend_trust,
+    wake_trust,
 )
+from cognilateral_trust.accountability import (
+    AccountabilityRecord,
+    AccountabilityStore,
+)
+from cognilateral_trust.routing import (
+    RouteRule,
+    RouterPolicy,
+    route_decision,
+    router_trust_policy,
+)
+from cognilateral_trust.network.decay import (
+    decay,
+    exponential_decay,
+    linear_decay,
+)
+from cognilateral_trust.network.contagion import (
+    ContagionAlert,
+    ContagionTracker,
+    PropagationEntry,
+)
+from cognilateral_trust.network.consensus import weighted_consensus
+from cognilateral_trust.network.sovereign import sovereign_worker
+from cognilateral_trust.network.provenance import ProvenanceChain
 from cognilateral_trust.persistence import (
     JSONLAccountabilityStore,
     JSONLPredictionStore,
