@@ -368,7 +368,7 @@ This library exists so AI systems can say "I'm not sure enough to act on this" *
 
 ## Contact
 
-Primary channel: `eric@cognilateral.com`. GitHub Discussions and Issues will open when the repo goes public. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md) for the hosted API's privacy terms.
+[Discussions](https://github.com/heymumford/cognilateral-trust/discussions) for public questions, [Issues](https://github.com/heymumford/cognilateral-trust/issues) for bugs, or `eric@cognilateral.com` for anything private. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md) for the hosted API's privacy terms.
 
 ## License
 
