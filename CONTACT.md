@@ -5,17 +5,12 @@
 ## Primary channels
 
 - **Email:** `eric@cognilateral.com` — fastest path to a reply
-- **Status:** <https://cognilateral.com/status>
-- **Changelog:** <https://cognilateral.com/changelog>
+- **GitHub Issues:** <https://github.com/heymumford/cognilateral-trust/issues>
+- **GitHub Discussions:** <https://github.com/heymumford/cognilateral-trust/discussions>
 
-## Public discussion
+## Privacy
 
-GitHub Discussions and Issues will open when the repo goes public. Until then, email is the open channel. If you have an API key, replying to any cognilateral.com email reaches the maintainer directly.
-
-## Hosted API (cognilateral.com)
-
-- **Support:** `eric@cognilateral.com` — API key issues, billing, data-deletion requests
-- **Privacy:** <https://cognilateral.com/privacy> (also available as [the privacy policy](docs/PRIVACY.md))
+See [the privacy policy](docs/PRIVACY.md).
 
 ## Press, briefings, attribution
 

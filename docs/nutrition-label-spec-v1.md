@@ -88,15 +88,6 @@ print(label.disclosure)
 # Trust evaluated. Confidence: 0.70 (C7). Calibration: 62.5%. Verdict: ACT.
 ```
 
-### HTTP API
-
-```bash
-curl -s https://cognilateral.com/api/v1/evaluate \
-  -H "Authorization: Bearer KEY" \
-  -d '{"confidence": 0.7}' | jq .disclosure
-# "Trust evaluated. Confidence: 0.70 (C7). Verdict: ACT."
-```
-
 ## Adoption
 
 Attach the label to any AI-generated content:

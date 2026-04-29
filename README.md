@@ -332,19 +332,6 @@ $ trust-check 0.3 --json
 {"confidence": 0.3, "tier": "C3", "route": "basic", "should_proceed": true, ...}
 ```
 
-## Hosted API
-
-Don't want to install anything? Use the hosted API:
-
-```bash
-curl -X POST https://cognilateral.com/api/v1/evaluate \
-  -H "Authorization: Bearer YOUR_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"confidence": 0.7, "is_reversible": true, "touches_external": false}'
-```
-
-Sign up at [cognilateral.com](https://cognilateral.com) — free tier includes 100 evaluations/day.
-
 ## Examples
 
 | Example | What It Shows |
@@ -368,7 +355,7 @@ This library exists so AI systems can say "I'm not sure enough to act on this" *
 
 ## Contact
 
-Primary channel: `eric@cognilateral.com`. GitHub Discussions and Issues will open when the repo goes public. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md) for the hosted API's privacy terms.
+Primary channel: `eric@cognilateral.com`. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md).
 
 ## License
 
