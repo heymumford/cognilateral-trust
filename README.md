@@ -334,16 +334,7 @@ $ trust-check 0.3 --json
 
 ## Hosted API
 
-Don't want to install anything? Use the hosted API:
-
-```bash
-curl -X POST https://cognilateral.com/api/v1/evaluate \
-  -H "Authorization: Bearer YOUR_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"confidence": 0.7, "is_reversible": true, "touches_external": false}'
-```
-
-Sign up at [cognilateral.com](https://cognilateral.com) — free tier includes 100 evaluations/day.
+The hosted API at `cognilateral.com/api/v1/*` was sunset on 2026-04-12. The PyPI library is the product and runs entirely on your machine — there is no hosted dependency. If you arrived here looking for the previous `curl` recipe, install the library instead. If you need an HTTP-callable surface, the library is small enough to wrap in a self-hosted FastAPI/Flask service.
 
 ## Examples
 
@@ -368,7 +359,7 @@ This library exists so AI systems can say "I'm not sure enough to act on this" *
 
 ## Contact
 
-Primary channel: `eric@cognilateral.com`. GitHub Discussions and Issues will open when the repo goes public. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md) for the hosted API's privacy terms.
+Primary channel: `eric@cognilateral.com`. See [the contact page](CONTACT.md) for the full list of channels and the [privacy policy](docs/PRIVACY.md).
 
 ## License
 
