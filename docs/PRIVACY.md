@@ -10,7 +10,7 @@ Nothing. The library has zero runtime dependencies and makes no network calls. P
 
 ## Persistence
 
-If you opt into the persistence helpers (`JSONLPredictionStore`, `JSONLAccountabilityStore`), records are written to local files at the paths you specify. Those files never leave your machine.
+If you opt into the persistence helpers (`JSONLPredictionStore`, `JSONLAccountabilityStore`), records are written to local files at the paths you specify. The library does not transmit them. Whether those files are then synced, backed up, or replicated is up to whatever tools you have configured at the OS or cloud-storage level — the library has no view into that.
 
 ## Contact
 

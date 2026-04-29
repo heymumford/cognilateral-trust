@@ -332,6 +332,10 @@ $ trust-check 0.3 --json
 {"confidence": 0.3, "tier": "C3", "route": "basic", "should_proceed": true, ...}
 ```
 
+## Hosted API
+
+The hosted API at `cognilateral.com/api/v1/*` was sunset on 2026-04-12. The PyPI library is the product and runs entirely on your machine — there is no hosted dependency. If you arrived here looking for the previous `curl` recipe, install the library instead. If you need an HTTP-callable surface, the library is small enough to wrap in a self-hosted FastAPI/Flask service.
+
 ## Examples
 
 | Example | What It Shows |
